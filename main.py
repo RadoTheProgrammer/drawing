@@ -1,6 +1,27 @@
 # Example file showing a basic pygame "game loop"
-import pygame
+import os
 
+def switch():
+    global filename
+    filename=os.path.join(DIR,filename_tag)
+    os.remove(CURRENT_FILE)
+    os.symlink(filename_tag,CURRENT_FILE)
+
+def new():
+    global filename_tag
+    filename_tag=f"drawing_{int(filename_tag.split('_')[1])+1}.png"
+    switch()
+DIR="drawings"
+CURRENT_FILE=os.path.join(DIR,"current.png")
+
+if os.path.exists(DIR):
+    filename_tag=os.readlink(os.path.join(DIR,CURRENT_FILE))
+    filename=os.path.join(DIR,filename_tag)
+else:
+    os.mkdir(DIR)
+    filename_tag="drawing_0.png"
+    
+import pygame
 # pygame setup
 pygame.init()
 screen = pygame.display.set_mode((1280, 720))
@@ -53,10 +74,9 @@ while running:
                 pen_size_add=-1
             elif event.key == pygame.K_RIGHT:
                 pen_size_add=1
-            elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_CTRL:
+            elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_CTRL:
                 # Ctrl+S is pressed
                 #file_path = filedialog.asksaveasfilename()
-                print("Ctrl+S is pressed")
                 # Add your code here to handle the Ctrl+S event
                 pen_size_add=1
         elif event.type == pygame.KEYUP:
